@@ -1,50 +1,33 @@
 #include <iostream>
 #include <vector>
 
-#include "headers/timer.hpp"
+#include "headers/benchmark.hpp"
 
 void testEmplaceBack() {
-  Timer timer;
-
-  for (int i = 0; i < 200; ++i) {
-    std::vector<int> vec;
-
-    for (int j = 0; j < 1'000'000; ++j) vec.emplace_back(j + 1);
-  }
-
-  std::cout << timer.getNanoseconds() << '\n';
+  std::vector<int> vec;
+  for (int j = 0; j < 1'000'000; ++j) vec.emplace_back(j + 1);
 }
 
 void testPushBack() {
-  Timer timer;
-
-  for (int i = 0; i < 500; ++i) {
-    std::vector<int> vec;
-
-    for (int j = 0; j < 1'000'000; ++j) vec.push_back(j + 1);
-  }
-
-  std::cout << timer.getNanoseconds() << '\n';
+  std::vector<int> vec;
+  for (int j = 0; j < 1'000'000; ++j) vec.push_back(j + 1);
 }
 
 void testOperatorInd() {
-  Timer timer;
-
-  for (int i = 0; i < 500; ++i) {
-    std::vector<int> vec(1'000'000);
-
-    for (int j = 0; j < 1'000'000; ++j) vec[j] = j + 1;
-
-    vec.clear();
-  }
-
-  std::cout << timer.getNanoseconds() << '\n';
+  std::vector<int> vec(1'000'000);
+  for (int j = 0; j < 1'000'000; ++j) vec[j] = j + 1;
 }
 
 int main() {
-  testEmplaceBack();
-  testPushBack();
-  testOperatorInd();
+  Benchmark<std::function<void()>> testEmplace(testEmplaceBack);
+  Benchmark<std::function<void()>> testPush(testPushBack);
+  Benchmark<std::function<void()>> testOperator(testOperatorInd);
+
+    size_t countTests = 300;
+
+  std::cout << "Test emplace_back: " << testEmplace(countTests) << '\n';
+  std::cout << "Test push_back: " << testPush(countTests) << '\n';
+  std::cout << "Test operator[]: " << testOperator(countTests) << '\n';
 
   return 0;
 }
