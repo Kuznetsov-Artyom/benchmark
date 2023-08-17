@@ -19,15 +19,13 @@ void testOperatorInd() {
 }
 
 int main() {
-  Benchmark<std::function<void()>> testEmplace(testEmplaceBack);
-  Benchmark<std::function<void()>> testPush(testPushBack);
-  Benchmark<std::function<void()>> testOperator(testOperatorInd);
+  size_t countTests = 300;
 
-    size_t countTests = 300;
+  timer::Timer<timer::millisecond_t> timer;
 
-  std::cout << "Test emplace_back: " << testEmplace(countTests) << '\n';
-  std::cout << "Test push_back: " << testPush(countTests) << '\n';
-  std::cout << "Test operator[]: " << testOperator(countTests) << '\n';
+  for (size_t i = 0; i < countTests; ++i) testPushBack();
+
+  std::cout << timer() << '\n';
 
   return 0;
 }
