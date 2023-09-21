@@ -5,25 +5,16 @@
 
 #include "timer.hpp"
 
+template <typename Func, typename... Args>
+class Benchmark {
+ private:
+  std::function<void()> mFunc;
 
+ public:
+  Benchmark(Func&& fn, Args&&... args)
+      : mFunc{std::bind(std::forward<Func>(fn), std::forward<Args>(args)...)} {}
 
-// template <typename Func>
-// class Benchmark {
-//  private:
-//   Func func; // function under test
-
-//  public:
-//   Benchmark(Func f, const size_t& countTests = 1) : func{f} {}
-
-//   int64_t operator()(const size_t& countTests = 1) {
-//     Timer timer;
-
-//     for (size_t numTest = 0; numTest < countTests; ++numTest) {
-//       func();
-//     }
-
-//     return timer.getNanoseconds();
-//   }
-//};
+  void operator()() const { mFunc(); }
+};
 
 #endif  // _BENCHMARK_HPP_
