@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "headers/benchmark.hpp"
+#include "timer.hpp"
 
 void testEmplaceBack() {
   std::vector<int> vec;
@@ -21,11 +21,11 @@ void testOperatorInd() {
 int main() {
   size_t countTests = 300;
 
-  timer::Timer<timer::millisecond_t> timer;
+  TIMER_START(timer, tmr::millisecond_t);
 
   for (size_t i = 0; i < countTests; ++i) testPushBack();
 
-  std::cout << timer() << '\n';
+  std::cout << TIMER_GET(timer) << '\n';
 
   return 0;
 }

@@ -6,6 +6,7 @@
 #include "timer.hpp"
 
 
+
 // template <typename Func>
 // class Benchmark {
 //  private:
