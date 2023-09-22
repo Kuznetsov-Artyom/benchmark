@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
 
-#include "headers/benchmark.hpp"
+#include "benchmark.hpp"
+#include "timer.hpp"
+
 
 void testEmplaceBack() {
   std::vector<int> vec;
@@ -18,16 +20,35 @@ void testOperatorInd() {
   for (int j = 0; j < 1'000'000; ++j) vec[j] = j + 1;
 }
 
+template <typename Func, typename... Args>
+auto wrapper(Func&& func, Args&&... args) {
+  return func(std::forward<Args>(args)...);
+}
+
+int addition(int valueOne, int valueTwo) { return valueOne + valueTwo; }
+
+void printHello() { std::cout << "Hello World!\n"; }
+
 int main() {
-  Benchmark<std::function<void()>> testEmplace(testEmplaceBack);
-  Benchmark<std::function<void()>> testPush(testPushBack);
-  Benchmark<std::function<void()>> testOperator(testOperatorInd);
+  /*size_t countTests = 300;
 
-    size_t countTests = 300;
+  TIMER_START(timer, tmr::millisecond_t);
 
-  std::cout << "Test emplace_back: " << testEmplace(countTests) << '\n';
-  std::cout << "Test push_back: " << testPush(countTests) << '\n';
-  std::cout << "Test operator[]: " << testOperator(countTests) << '\n';
+  for (size_t i = 0; i < countTests; ++i) testPushBack();
+
+  std::cout << TIMER_GET(timer) << '\n';*/
+
+  std::cout << wrapper(addition, 100, 200) << '\n';
+  wrapper(printHello);
+
+  Benchmark testPush(testPushBack); 
+  Benchmark testEmplace(testEmplaceBack);
+  Benchmark testInd(testOperatorInd);
+  size_t countTests = 100;
+
+  std::cout << testPush(countTests) << '\n';
+  std::cout << testEmplace(countTests) << '\n';
+  std::cout << testInd(countTests) << '\n';
 
   return 0;
 }
