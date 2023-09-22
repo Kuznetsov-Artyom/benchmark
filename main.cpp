@@ -30,25 +30,23 @@ int addition(int valueOne, int valueTwo) { return valueOne + valueTwo; }
 void printHello() { std::cout << "Hello World!\n"; }
 
 int main() {
-  /*size_t countTests = 300;
-
-  TIMER_START(timer, tmr::millisecond_t);
-
-  for (size_t i = 0; i < countTests; ++i) testPushBack();
-
-  std::cout << TIMER_GET(timer) << '\n';*/
-
   std::cout << wrapper(addition, 100, 200) << '\n';
   wrapper(printHello);
 
-  Benchmark testPush(testPushBack); 
-  Benchmark testEmplace(testEmplaceBack);
-  Benchmark testInd(testOperatorInd);
+  BENCHMARK_CREATE(benchAddition, addition, 100, 200);
+  std::cout << BENCHMARK_START(benchAddition, 10) << '\n';
+
+  BENCHMARK_CREATE(testPush, testPushBack); 
+  BENCHMARK_CREATE(testEmplace, testEmplaceBack);
+  BENCHMARK_CREATE(testInd, testOperatorInd);
   size_t countTests = 100;
 
-  std::cout << testPush(countTests) << '\n';
-  std::cout << testEmplace(countTests) << '\n';
-  std::cout << testInd(countTests) << '\n';
+  std::cout << BENCHMARK_START(testPush, countTests) << '\n';
+  std::cout << BENCHMARK_START(testEmplace, countTests) << '\n';
+  std::cout << BENCHMARK_START(testInd, countTests) << '\n';
+
+  BENCHMARK_CREATE(bench, printHello);
+  std::cout << BENCHMARK_START(bench, 5) << '\n';
 
   return 0;
 }

@@ -5,6 +5,10 @@
 
 #include "timer.hpp"
 
+#define BENCHMARK_CREATE(varName, func, ...) bmk::Benchmark varName(func, __VA_ARGS__)
+#define BENCHMARK_START(varName, countTests) varName(countTests)
+
+namespace bmk {
 template <typename Func, typename... Args>
 class Benchmark {
  private:
@@ -26,5 +30,6 @@ class Benchmark {
     return total / countTests;
   }
 };
+}  // namespace bmk
 
 #endif  // _BENCHMARK_HPP_
