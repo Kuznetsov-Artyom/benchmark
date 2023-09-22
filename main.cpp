@@ -41,15 +41,14 @@ int main() {
   std::cout << wrapper(addition, 100, 200) << '\n';
   wrapper(printHello);
 
-  Benchmark benchmark(addition, 100, 200);
+  Benchmark testPush(testPushBack); 
+  Benchmark testEmplace(testEmplaceBack);
+  Benchmark testInd(testOperatorInd);
+  size_t countTests = 100;
 
-  benchmark();
-  benchmark();
-
-  Benchmark benchmark2(printHello);
-
-  benchmark2();
-  benchmark2();
+  std::cout << testPush(countTests) << '\n';
+  std::cout << testEmplace(countTests) << '\n';
+  std::cout << testInd(countTests) << '\n';
 
   return 0;
 }
