@@ -4,7 +4,6 @@
 #include "benchmark.hpp"
 #include "timer.hpp"
 
-
 void testEmplaceBack() {
   std::vector<int> vec;
   for (int j = 0; j < 1'000'000; ++j) vec.emplace_back(j + 1);
@@ -33,20 +32,24 @@ int main() {
   std::cout << wrapper(addition, 100, 200) << '\n';
   wrapper(printHello);
 
-  BENCHMARK_CREATE(benchAddition, addition, 100, 200);
-  std::cout << BENCHMARK_START(benchAddition, 10) << '\n';
+  BMK_CREATE(benchAddition, addition, 100, 200);
+  int test = BMK_START(benchAddition, 10);
 
-  BENCHMARK_CREATE(testPush, testPushBack); 
-  BENCHMARK_CREATE(testEmplace, testEmplaceBack);
-  BENCHMARK_CREATE(testInd, testOperatorInd);
-  size_t countTests = 100;
+  if (test == BMK_EXIT_SUCCESS) {
+    std::cout << BMK_GET_INFO(benchAddition) << '\n';
+  }
 
-  std::cout << BENCHMARK_START(testPush, countTests) << '\n';
-  std::cout << BENCHMARK_START(testEmplace, countTests) << '\n';
-  std::cout << BENCHMARK_START(testInd, countTests) << '\n';
+  /*BMK_CREATE(testPush, testPushBack);
+  BMK_CREATE(testEmplace, testEmplaceBack);
+  BMK_CREATE(testInd, testOperatorInd);
+  size_t countTests = 1;
 
-  BENCHMARK_CREATE(bench, printHello);
-  std::cout << BENCHMARK_START(bench, 5) << '\n';
+  BMK_START(testPush, countTests) << '\n';
+  BMK_START(testEmplace, countTests) << '\n';
+  BMK_START(testInd, countTests) << '\n';
+
+  BMK_CREATE(bench, printHello);
+  BMK_START(bench, 5) << '\n';*/
 
   return 0;
 }
