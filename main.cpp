@@ -4,51 +4,36 @@
 #include "benchmark.hpp"
 #include "timer.hpp"
 
-
-void testEmplaceBack() {
+static void testEmplaceBack() {
   std::vector<int> vec;
   for (int j = 0; j < 1'000'000; ++j) vec.emplace_back(j + 1);
 }
 
-void testPushBack() {
+static void testPushBack() {
   std::vector<int> vec;
   for (int j = 0; j < 1'000'000; ++j) vec.push_back(j + 1);
 }
 
-void testOperatorInd() {
+static void testOperatorInd() {
   std::vector<int> vec(1'000'000);
   for (int j = 0; j < 1'000'000; ++j) vec[j] = j + 1;
 }
 
-template <typename Func, typename... Args>
-auto wrapper(Func&& func, Args&&... args) {
-  return func(std::forward<Args>(args)...);
-}
-
-int addition(int valueOne, int valueTwo) { return valueOne + valueTwo; }
-
-void printHello() { std::cout << "Hello World!\n"; }
-
 int main() {
-  /*size_t countTests = 300;
-
-  TIMER_START(timer, tmr::millisecond_t);
-
-  for (size_t i = 0; i < countTests; ++i) testPushBack();
-
-  std::cout << TIMER_GET(timer) << '\n';*/
-
-  std::cout << wrapper(addition, 100, 200) << '\n';
-  wrapper(printHello);
-
-  Benchmark testPush(testPushBack); 
-  Benchmark testEmplace(testEmplaceBack);
-  Benchmark testInd(testOperatorInd);
+  BMK_CREATE(testPush, testPushBack);
+  BMK_CREATE(testEmplace, testEmplaceBack);
+  BMK_CREATE(testInd, testOperatorInd);
   size_t countTests = 100;
 
-  std::cout << testPush(countTests) << '\n';
-  std::cout << testEmplace(countTests) << '\n';
-  std::cout << testInd(countTests) << '\n';
+  int codePush = BMK_START(testPush, countTests);
+  int codeEmpl = BMK_START(testEmplace, countTests);
+  int codeInd = BMK_START(testInd, countTests);
+
+  if (codePush == 0 && codeEmpl == 0 && codeInd == 0) {
+    std::cout << "push: " << BMK_GET_INFO(testPush) << '\n';
+    std::cout << "empl: " << BMK_GET_INFO(testEmplace) << '\n';
+    std::cout << "ind: " << BMK_GET_INFO(testInd) << '\n';
+  }
 
   return 0;
 }
