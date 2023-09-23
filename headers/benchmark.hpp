@@ -9,10 +9,10 @@
 #define BMK_START(varName, countTests) varName(countTests)
 #define BMK_GET_INFO(varName) varName.getResult()
 
-#define BMK_EXIT_SUCCESS 0
-#define BMK_EXIT_FAILURE -1
-
 namespace bmk {
+enum ExitCode { SUCCESS = 0, FAILURE = -1 };
+enum ResultCode { NO_STARTED = -1, ERROR = -2 };
+
 template <typename Func, typename... Args>
 class Benchmark {
  private:
@@ -22,7 +22,7 @@ class Benchmark {
  public:
   Benchmark(Func&& fn, Args&&... args)
       : mFunc{std::bind(std::forward<Func>(fn), std::forward<Args>(args)...)},
-        mLastResult{-1} {}
+        mLastResult{ResultCode::NO_STARTED} {}
   Benchmark(const Benchmark&) = delete;
   Benchmark(Benchmark&&) = delete;
 
@@ -30,18 +30,23 @@ class Benchmark {
 
   int operator()(const size_t& countTests) {
     int64_t total = 0;
-
-    for (size_t i = 0; i < countTests; ++i) {
-      TIMER_START(timer, tmr::millisecond_t);
-      mFunc();
-      total += TIMER_GET(timer);
+    try {
+      for (size_t i = 0; i < countTests; ++i) {
+        TIMER_START(timer, tmr::millisecond_t);
+        mFunc();
+        total += TIMER_GET(timer);
+      }
+    } catch (const std::exception& ex) {
+      std::cerr << ex.what() << '\n';
+      mLastResult = ResultCode::ERROR;
+      return ExitCode::FAILURE;
     }
     mLastResult = total / countTests;
-    return BMK_EXIT_SUCCESS;
+    return ExitCode::SUCCESS;
   }
 
-  Benchmark& operator= (const Benchmark&) = delete;
-  Benchmark& operator= (Benchmark&&) = delete;
+  Benchmark& operator=(const Benchmark&) = delete;
+  Benchmark& operator=(Benchmark&&) = delete;
 };
 }  // namespace bmk
 
