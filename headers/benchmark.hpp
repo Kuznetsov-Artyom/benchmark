@@ -20,8 +20,8 @@ class Benchmark {
   int64_t mLastResult;
 
  public:
-  Benchmark(Func&& fn, Args&&... args)
-      : mFunc{std::bind(std::forward<Func>(fn), std::forward<Args>(args)...)},
+  Benchmark(Func&& fn, Args... args)
+      : mFunc{std::bind(std::forward<Func>(fn), args...)},
         mLastResult{ResultCode::NO_STARTED} {}
   Benchmark(const Benchmark&) = delete;
   Benchmark(Benchmark&&) = delete;
