@@ -6,7 +6,7 @@
 #include "timer.hpp"
 
 #define BMK_CREATE(varName, func, ...) bmk::Benchmark varName(func, __VA_ARGS__)
-#define BMK_START(varName, countTests) varName(countTests)
+#define BMK_START(varName, period, countTests) varName.operator()<period>(countTests);
 #define BMK_GET_INFO(varName) varName.getResult()
 
 namespace bmk {
@@ -28,6 +28,7 @@ class Benchmark {
 
   int64_t getResult();
 
+  template <typename Period>
   int operator()(const size_t& countTests);
 
   Benchmark& operator=(const Benchmark&) = delete;
@@ -40,12 +41,15 @@ inline int64_t Benchmark<Func, Args...>::getResult() {
 }
 
 template <typename Func, typename... Args>
-inline int Benchmark<Func, Args...>::operator()(const size_t& countTests) {
+template <typename Period>
+inline int Benchmark<Func, Args...>::operator()(
+    const size_t& countTests) {
   int64_t total = 0;
   try {
     for (size_t i = 0; i < countTests; ++i) {
-      TIMER_START(timer, tmr::millisecond_t);
-      mFunc();
+      auto func = mFunc;
+      TIMER_START(timer, Period);
+      func();
       total += TIMER_GET(timer);
     }
   } catch (const std::exception& ex) {
