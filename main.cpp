@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -29,15 +30,16 @@ std::ostream& operator<<(std::ostream& out, const Container<T>& cont) {
   return out << *itBegin;
 }
 
-static int64_t printVector(std::vector<int> elems) {
+static void sortPrintVector(std::vector<int> elems) {
   std::cout << elems << '\n';
-  return 0;
+  std::sort(elems.begin(), elems.end());
+  std::cout << elems << '\n';
 }
 
 int main() {
-  std::vector<int> elems{1, 2, 3, 4, 5};
+  std::vector<int> elems{5, 3, 0, 1, 2, 4};
 
-  BMK_CREATE(testPrintVec, printVector, elems);
+  BMK_CREATE(testPrintVec, sortPrintVector, elems);
   int codePrintVec = BMK_START(testPrintVec, 3);
 
   if (codePrintVec == 0) {

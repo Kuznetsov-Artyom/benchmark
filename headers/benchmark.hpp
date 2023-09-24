@@ -44,8 +44,9 @@ inline int Benchmark<Func, Args...>::operator()(const size_t& countTests) {
   int64_t total = 0;
   try {
     for (size_t i = 0; i < countTests; ++i) {
+      auto func = mFunc;
       TIMER_START(timer, tmr::millisecond_t);
-      mFunc();
+      func();
       total += TIMER_GET(timer);
     }
   } catch (const std::exception& ex) {
