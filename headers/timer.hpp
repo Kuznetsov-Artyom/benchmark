@@ -23,7 +23,7 @@ constexpr bool is_type_time_v =
                         minute_t, hour_t>;
 
 template <typename T>
-using enable_type_time_t = typename std::enable_if_t<is_type_time_v<T>>;
+using enable_type_time_t = std::enable_if_t<is_type_time_v<T>>;
 
 template <typename Period, typename Enable = void>
 class Timer {};
