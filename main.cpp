@@ -40,7 +40,7 @@ int main() {
   std::vector<int> elems{5, 3, 0, 1, 2, 4};
 
   BMK_CREATE(testPrintVec, sortPrintVector, elems);
-  int codePrintVec = BMK_START(testPrintVec, tmr::millisecond_t, 3);
+  int codePrintVec = BMK_START(testPrintVec, tmr::millisecond_t, 0, 3);
 
   if (codePrintVec == 0) {
     std::cout << BMK_GET_INFO(testPrintVec) << '\n';
@@ -52,9 +52,9 @@ int main() {
   size_t countTests = 100;
 
   // test (ms)
-  int codePush = BMK_START(testPush, tmr::millisecond_t, countTests);
-  int codeEmpl = BMK_START(testEmplace, tmr::millisecond_t, countTests);
-  int codeInd = BMK_START(testInd, tmr::millisecond_t, countTests);
+  int codePush = BMK_START(testPush, tmr::millisecond_t, 0, countTests);
+  int codeEmpl = BMK_START(testEmplace, tmr::millisecond_t, 0, countTests);
+  int codeInd = BMK_START(testInd, tmr::millisecond_t, 0, countTests);
 
   if (codePush == 0 && codeEmpl == 0 && codeInd == 0) {
     std::cout << "push:\t" << BMK_GET_INFO(testPush) << '\n';
@@ -65,9 +65,9 @@ int main() {
   std::cout << '\n';
 
   // test (ns)
-  codePush = BMK_START(testPush, tmr::nanosecond_t, countTests);
-  codeEmpl = BMK_START(testEmplace, tmr::nanosecond_t, countTests);
-  codeInd = BMK_START(testInd, tmr::nanosecond_t, countTests);
+  codePush = BMK_START(testPush, tmr::nanosecond_t, 1, countTests);
+  codeEmpl = BMK_START(testEmplace, tmr::nanosecond_t, 1, countTests);
+  codeInd = BMK_START(testInd, tmr::nanosecond_t, 1, countTests);
 
   if (codePush == 0 && codeEmpl == 0 && codeInd == 0) {
     std::cout << "push:\t" << BMK_GET_INFO(testPush) << '\n';

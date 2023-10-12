@@ -6,12 +6,14 @@
 #include "timer.hpp"
 
 #define BMK_CREATE(varName, func, ...) bmk::Benchmark varName(func, __VA_ARGS__)
-#define BMK_START(varName, period, countTests) varName.operator()<period>(countTests);
+#define BMK_START(varName, period, layout, countTests) \
+  varName.operator()<period>(layout, countTests);
 #define BMK_GET_INFO(varName) varName.getResult()
 
 namespace bmk {
 enum ExitCode { SUCCESS = 0, FAILURE = -1 };
 enum ResultCode { NO_STARTED = -1, ERROR = -2 };
+enum Layout { AVERAGE, BEST, DEL_TAIL };
 
 template <typename Func, typename... Args>
 class Benchmark {
@@ -29,7 +31,7 @@ class Benchmark {
   int64_t getResult();
 
   template <typename Period>
-  int operator()(const size_t& countTests);
+  int operator()(int layout, const size_t& countTests);
 
   Benchmark& operator=(const Benchmark&) = delete;
   Benchmark& operator=(Benchmark&&) = delete;
@@ -42,22 +44,38 @@ inline int64_t Benchmark<Func, Args...>::getResult() {
 
 template <typename Func, typename... Args>
 template <typename Period>
-inline int Benchmark<Func, Args...>::operator()(
-    const size_t& countTests) {
+inline int Benchmark<Func, Args...>::operator()(int layout,
+                                                const size_t& countTests) {
   int64_t total = 0;
+  int64_t curRes = -1;
+  int64_t minRes = INT64_MAX;
+  int64_t maxRes = INT64_MIN;
+
   try {
     for (size_t i = 0; i < countTests; ++i) {
       auto func = mFunc;
       TIMER_START(timer, Period);
       func();
-      total += TIMER_GET(timer);
+      curRes = TIMER_GET(timer);
+
+      if (curRes < minRes) minRes = curRes;
+      if (curRes > maxRes) maxRes = curRes;
+
+      total += curRes;
     }
   } catch (const std::exception& ex) {
     std::cerr << ex.what() << '\n';
     mLastResult = ResultCode::ERROR;
     return ExitCode::FAILURE;
   }
-  mLastResult = total / countTests;
+
+  if (layout == Layout::AVERAGE) {
+    mLastResult = total / countTests;
+  } else if (layout == Layout::BEST) {
+    mLastResult = minRes;
+  } else {
+    mLastResult = (total - maxRes) / (countTests - 1);
+  }
   return ExitCode::SUCCESS;
 }
 }  // namespace bmk
