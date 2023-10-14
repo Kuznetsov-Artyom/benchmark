@@ -12,7 +12,7 @@
 
 namespace bmk {
 enum ExitCode { SUCCESS = 0, FAILURE = -1 };
-enum ResultCode { NO_STARTED = -1, ERROR = -2 };
+enum ResultCode { NO_STARTED = -1, EXE_ERROR = -2, LAYOUT_ERROR = -3 };
 enum Layout { AVERAGE, BEST, DEL_TAIL };
 
 template <typename Func, typename... Args>
@@ -65,16 +65,24 @@ inline int Benchmark<Func, Args...>::operator()(int layout,
     }
   } catch (const std::exception& ex) {
     std::cerr << ex.what() << '\n';
-    mLastResult = ResultCode::ERROR;
+    mLastResult = ResultCode::EXE_ERROR;
     return ExitCode::FAILURE;
   }
 
-  if (layout == Layout::AVERAGE) {
-    mLastResult = total / countTests;
-  } else if (layout == Layout::BEST) {
-    mLastResult = minRes;
-  } else {
-    mLastResult = (total - maxRes) / (countTests - 1);
+  switch (layout) {
+    case Layout::AVERAGE:
+      mLastResult = total / countTests;
+      break;
+    case Layout::BEST:
+      mLastResult = minRes;
+      break;
+    case Layout::DEL_TAIL:
+      mLastResult = (total - maxRes) / (countTests - 1);
+      break;
+    default:
+      mLastResult = ResultCode::LAYOUT_ERROR;
+      return ExitCode::FAILURE;
+      break;
   }
   return ExitCode::SUCCESS;
 }

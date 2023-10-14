@@ -65,7 +65,7 @@ int main() {
   std::cout << '\n';
 
   // test (ns)
-  codePush = BMK_START(testPush, tmr::nanosecond_t, 1, countTests);
+  codePush = BMK_START(testPush, tmr::nanosecond_t, 3, countTests);
   codeEmpl = BMK_START(testEmplace, tmr::nanosecond_t, 1, countTests);
   codeInd = BMK_START(testInd, tmr::nanosecond_t, 1, countTests);
 
