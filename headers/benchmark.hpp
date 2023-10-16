@@ -59,6 +59,7 @@ template <typename Func, typename... Args>
 template <typename Period>
 inline int Benchmark<Func, Args...>::operator()(const size_t& countTests) {
   if (countTests == 0) {
+    mLastResult = Info(ResultCode::ERROR);
     return ExitCode::COUNT_TESTS_IS_ZERO;
   }
 
