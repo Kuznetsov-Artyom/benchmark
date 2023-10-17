@@ -36,14 +36,40 @@ static void sortPrintVector(std::vector<int> elems) {
   std::cout << elems << '\n';
 }
 
+static void throwFunc() { throw std::logic_error{"error"}; }
+
+static double addition(double a, double b) { return a + b; }
+
 int main() {
+  BMK_CREATE(throwTest, throwFunc);
+
+  int codeTest = BMK_START(throwTest, tmr::microsecond_t, 10);
+
+  if (codeTest == bmk::ExitCode::SUCCESS) {
+    std::cout << "success\n";
+  } else {
+    std::cout << "failure: " << codeTest << '\n';
+  }
+
+  double valueOne = 20.5;
+  double valueTwo = 30.5;
+  BMK_CREATE(testAddition, addition, valueOne, valueTwo);
+
+  int codeTestAddition = BMK_START(testAddition, tmr::microsecond_t, 0);
+
+  if (codeTestAddition == bmk::ExitCode::SUCCESS) {
+    std::cout << "success\n";
+  } else {
+    std::cout << "failure: " << codeTestAddition << '\n';
+  }
+
   std::vector<int> elems{5, 3, 0, 1, 2, 4};
 
   BMK_CREATE(testPrintVec, sortPrintVector, elems);
-  int codePrintVec = BMK_START(testPrintVec, tmr::millisecond_t, 0, 3);
+  int codePrintVec = BMK_START(testPrintVec, tmr::millisecond_t, 3);
 
   if (codePrintVec == 0) {
-    std::cout << BMK_GET_INFO(testPrintVec) << '\n';
+    std::cout << BMK_GET_INFO(testPrintVec).mBest << '\n';
   }
 
   BMK_CREATE(testPush, testPushBack);
@@ -52,27 +78,27 @@ int main() {
   size_t countTests = 100;
 
   // test (ms)
-  int codePush = BMK_START(testPush, tmr::millisecond_t, 0, countTests);
-  int codeEmpl = BMK_START(testEmplace, tmr::millisecond_t, 0, countTests);
-  int codeInd = BMK_START(testInd, tmr::millisecond_t, 0, countTests);
+  int codePush = BMK_START(testPush, tmr::millisecond_t, countTests);
+  int codeEmpl = BMK_START(testEmplace, tmr::millisecond_t, countTests);
+  int codeInd = BMK_START(testInd, tmr::millisecond_t, countTests);
 
   if (codePush == 0 && codeEmpl == 0 && codeInd == 0) {
-    std::cout << "push:\t" << BMK_GET_INFO(testPush) << '\n';
-    std::cout << "empl:\t" << BMK_GET_INFO(testEmplace) << '\n';
-    std::cout << "ind:\t" << BMK_GET_INFO(testInd) << '\n';
+    std::cout << "push:\t" << BMK_GET_INFO(testPush).mBest << '\n';
+    std::cout << "empl:\t" << BMK_GET_INFO(testEmplace).mAvg << '\n';
+    std::cout << "ind:\t" << BMK_GET_INFO(testInd).mDelTail << '\n';
   }
 
   std::cout << '\n';
 
   // test (ns)
-  codePush = BMK_START(testPush, tmr::nanosecond_t, 3, countTests);
-  codeEmpl = BMK_START(testEmplace, tmr::nanosecond_t, 1, countTests);
-  codeInd = BMK_START(testInd, tmr::nanosecond_t, 1, countTests);
+  codePush = BMK_START(testPush, tmr::nanosecond_t, countTests);
+  codeEmpl = BMK_START(testEmplace, tmr::nanosecond_t, countTests);
+  codeInd = BMK_START(testInd, tmr::nanosecond_t, countTests);
 
   if (codePush == 0 && codeEmpl == 0 && codeInd == 0) {
-    std::cout << "push:\t" << BMK_GET_INFO(testPush) << '\n';
-    std::cout << "empl:\t" << BMK_GET_INFO(testEmplace) << '\n';
-    std::cout << "ind:\t" << BMK_GET_INFO(testInd) << '\n';
+    std::cout << "push:\t" << BMK_GET_AVG(testPush) << '\n';
+    std::cout << "empl:\t" << BMK_GET_BEST(testEmplace) << '\n';
+    std::cout << "ind:\t" << BMK_GET_DEL_TAIL(testInd) << '\n';
   }
 
   return 0;
